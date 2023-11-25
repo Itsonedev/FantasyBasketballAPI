@@ -1,6 +1,8 @@
 package com.FantasyBasketball.NBAFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,12 +21,14 @@ public class Team {
     @Column(name = "TEAM_NAME")
     private String teamName;
 
-    @OneToMany(mappedBy = "team")
+//    @JsonIgnore
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<Player> roster;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "LEAGUE_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private League league;
 
     public Team() {

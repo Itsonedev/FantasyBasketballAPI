@@ -26,7 +26,11 @@ public class TeamService {
     public Team createTeam(Long leagueId, Team team){
         League league = leagueService.getLeagueById(leagueId);
         team.setLeague(league);
-        return teamRepository.save(team);
+        Team savedTeam = teamRepository.save(team);
+        league.addTeam(savedTeam);
+
+        leagueService.updateLeague(leagueId,league);
+        return savedTeam;
     }
 
     public Team getTeamById(Long leagueId, Long teamId){
@@ -38,16 +42,18 @@ public class TeamService {
     public void editTeam(Long leagueId, Long teamId, Team updatedTeam){
         League existingLeague = leagueService.getLeagueById(leagueId);
         existingLeague.getTeams().stream().filter(team1 -> team1.getId().equals(teamId)).findFirst().ifPresent(team -> {
-            team.setTeamName(updatedTeam.getTeamName());
+            if (updatedTeam.getTeamName() != null) {
+                team.setTeamName(updatedTeam.getTeamName());
+            }
             team.setTeamOwner(updatedTeam.getTeamOwner());});
         leagueRepository.save(existingLeague);
     }
 
     public void deleteTeam(Long leagueId, Long teamId){
         League league = leagueService.getLeagueById(leagueId);
-        league.getTeams().removeIf(team -> team.getId().equals(teamId));
-
-        leagueRepository.save(league);
+        Team team = teamRepository.findById(teamId).orElse(null);
+        league.removeTeam(team);
+        leagueService.updateLeague(leagueId, league);
         teamRepository.deleteById(teamId);
     }
 }

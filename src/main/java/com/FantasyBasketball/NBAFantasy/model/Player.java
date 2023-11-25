@@ -1,5 +1,9 @@
 package com.FantasyBasketball.NBAFantasy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,9 +19,10 @@ public class Player {
 
     @Column(name = "PLAYER_POSITION")
     private String position;
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "TEAM_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team team;
 
     public Player() {

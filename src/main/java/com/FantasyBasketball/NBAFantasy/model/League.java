@@ -1,8 +1,11 @@
 package com.FantasyBasketball.NBAFantasy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,15 +18,15 @@ public class League {
 
     @Column(name = "LEAGUE_NAME")
     private String name;
-
-    @OneToMany(mappedBy = "league")
+    @JsonIgnore
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
     private List<Team> teams;
 
     @Column(name = "BUY_IN")
     private Double buyIn;
 
     @Column(name = "TOTAL_POT")
-    private Double totalPot;
+    private Double totalPot = 0.0;
     public League() {
     }
 
@@ -35,9 +38,10 @@ public class League {
         this.totalPot = totalPot;
     }
 
-    public void updateTotalPot(){
-        totalPot = buyIn * teams.size();
-    }
+//    public void updateTotalPot(){
+//        totalPot = buyIn * teams.size();
+//        System.out.println(teams.size());
+//    }
 
     public Long getId() {
         return id;
@@ -61,7 +65,7 @@ public class League {
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
-        updateTotalPot();
+//        updateTotalPot();
     }
 
     public Double getBuyIn() {
@@ -70,7 +74,7 @@ public class League {
 
     public void setBuyIn(Double buyIn) {
         this.buyIn = buyIn;
-        updateTotalPot();
+//        updateTotalPot();
     }
 
     public Double getTotalPot() {
@@ -80,4 +84,18 @@ public class League {
     public void setTotalPot(Double totalPot) {
         this.totalPot = totalPot;
     }
+    public void addTeam(Team team) {
+        teams.add(team);
+        totalPot += buyIn;
+//        updateTotalPot();
+        System.out.println(teams.size());
+    }
+
+    public void removeTeam(Team team) {
+        teams.remove(team);
+        totalPot -= buyIn;
+        System.out.println(teams.size());
+//        updateTotalPot();
+    }
+
 }
