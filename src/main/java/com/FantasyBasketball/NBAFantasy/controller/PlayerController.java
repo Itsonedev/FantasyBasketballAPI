@@ -1,5 +1,6 @@
 package com.FantasyBasketball.NBAFantasy.controller;
 
+import com.FantasyBasketball.NBAFantasy.exceptions.ElementNotFoundException;
 import com.FantasyBasketball.NBAFantasy.model.Player;
 import com.FantasyBasketball.NBAFantasy.model.Team;
 import com.FantasyBasketball.NBAFantasy.service.PlayerService;
@@ -12,12 +13,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Optional;
+
 @RestController
 public class PlayerController {
     @Autowired
     private PlayerService playerService;
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerController.class);
+
+    protected void verifyPlayer(Long leagueId, Long teamId, Long playerId) throws ElementNotFoundException {
+        Optional<Player> player = Optional.ofNullable(playerService.getPlayerById(leagueId, teamId, playerId));
+        if (player.isEmpty()) {
+            throw new ElementNotFoundException("Player with id " + playerId + " not found");
+        }
+    }
 
     @PostMapping(value = "/leagues/{leagueId}/teams/{teamId}/roster")
     public ResponseEntity<?> createPlayer(@PathVariable Long leagueId, @PathVariable Long teamId, @RequestBody Player player){
@@ -39,6 +49,7 @@ public class PlayerController {
     @GetMapping(value = "/leagues/{leagueId}/teams/{teamId}/roster/{playerId}")
     public ResponseEntity<?> getPlayerById(@PathVariable Long leagueId, @PathVariable Long teamId, @PathVariable Long playerId){
         logger.info("Request received: Getting Player");
+        verifyPlayer(leagueId, teamId, playerId);
         Player player = playerService.getPlayerById(leagueId, teamId, playerId);
         logger.info("Player Gotten Successfully");
         return new ResponseEntity<>(player, HttpStatus.OK);
@@ -46,6 +57,7 @@ public class PlayerController {
     @PutMapping(value = "/leagues/{leagueId}/teams/{teamId}/roster/{playerId}")
     public ResponseEntity<?> editPlayer(@PathVariable Long leagueId, @PathVariable Long teamId, @PathVariable Long playerId, @RequestBody Player updatedPlayer){
         logger.info("Request received: Editing Player");
+        verifyPlayer(leagueId, teamId, playerId);
         playerService.editPlayer(leagueId, teamId, playerId, updatedPlayer);
         logger.info("Player Edited Successfully");
         return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
@@ -54,6 +66,7 @@ public class PlayerController {
     @DeleteMapping(value = "/leagues/{leagueId}/teams/{teamId}/roster/{playerId}")
     public ResponseEntity<?> deletePlayer(@PathVariable Long leagueId, @PathVariable Long teamId, @PathVariable Long playerId){
         logger.info("Request received: Deleting player");
+        verifyPlayer(leagueId, teamId, playerId);
         playerService.deletePlayer(leagueId, teamId, playerId);
         logger.info("Player Deleted Successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

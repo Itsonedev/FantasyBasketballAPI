@@ -16,6 +16,9 @@ public class League {
     @Column(name = "LEAGUE_ID")
     private Long id;
 
+    @Column(name = "COMMISSIONER")
+    private String commissioner;
+
     @Column(name = "LEAGUE_NAME")
     private String name;
     @JsonIgnore
@@ -30,18 +33,15 @@ public class League {
     public League() {
     }
 
-    public League(Long id, String name, List<Team> teams, Double buyIn, Double totalPot) {
+
+    public League(Long id, String commissioner, String name, List<Team> teams, Double buyIn, Double totalPot) {
         this.id = id;
+        this.commissioner = commissioner;
         this.name = name;
         this.teams = teams;
         this.buyIn = buyIn;
         this.totalPot = totalPot;
     }
-
-//    public void updateTotalPot(){
-//        totalPot = buyIn * teams.size();
-//        System.out.println(teams.size());
-//    }
 
     public Long getId() {
         return id;
@@ -65,7 +65,6 @@ public class League {
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
-//        updateTotalPot();
     }
 
     public Double getBuyIn() {
@@ -74,7 +73,6 @@ public class League {
 
     public void setBuyIn(Double buyIn) {
         this.buyIn = buyIn;
-//        updateTotalPot();
     }
 
     public Double getTotalPot() {
@@ -87,15 +85,18 @@ public class League {
     public void addTeam(Team team) {
         teams.add(team);
         totalPot += buyIn;
-//        updateTotalPot();
-        System.out.println(teams.size());
     }
 
     public void removeTeam(Team team) {
         teams.remove(team);
         totalPot -= buyIn;
-        System.out.println(teams.size());
-//        updateTotalPot();
     }
 
+    public String getCommissioner() {
+        return commissioner;
+    }
+
+    public void setCommissioner(String commissioner) {
+        this.commissioner = commissioner;
+    }
 }

@@ -19,6 +19,8 @@ public class Player {
 
     @Column(name = "PLAYER_POSITION")
     private String position;
+    @Column(name = "NBA_TEAM")
+    private String nbaTeam;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "TEAM_ID")
@@ -28,10 +30,12 @@ public class Player {
     public Player() {
     }
 
-    public Player(Long id, String name, String position, Team team) {
+
+    public Player(Long id, String name, String position, String nbaTeam, Team team) {
         this.id = id;
         this.name = name;
         this.position = position;
+        this.nbaTeam = nbaTeam;
         this.team = team;
     }
 
@@ -65,5 +69,13 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public String getNbaTeam() {
+        return nbaTeam;
+    }
+
+    public void setNbaTeam(String nbaTeam) {
+        this.nbaTeam = nbaTeam;
     }
 }

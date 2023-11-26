@@ -45,7 +45,8 @@ public class PlayerService {
         Team existingTeam = teamService.getTeamById(leagueId, teamId);
         existingTeam.getRoster().stream().filter(player -> player.getId().equals(playerId)).findFirst().ifPresent(player -> {
             player.setName(updatedPlayer.getName());
-            player.setPosition(updatedPlayer.getPosition());});
+            player.setPosition(updatedPlayer.getPosition());
+            player.setNbaTeam(updatedPlayer.getNbaTeam());});
         teamRepository.save(existingTeam);
     }
 

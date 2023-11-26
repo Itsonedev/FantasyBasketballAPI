@@ -1,5 +1,6 @@
 package com.FantasyBasketball.NBAFantasy.service;
 
+import com.FantasyBasketball.NBAFantasy.exceptions.ElementNotFoundException;
 import com.FantasyBasketball.NBAFantasy.model.League;
 import com.FantasyBasketball.NBAFantasy.repository.LeagueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ public class LeagueService {
     @Autowired
     private LeagueRepository leagueRepository;
 
+
+
     public League createLeague(League league){
         return leagueRepository.save(league);
     }
@@ -22,6 +25,7 @@ public class LeagueService {
 
     public void updateLeague(Long leagueId, League league){
         League existingLeague = leagueRepository.findById(leagueId).get();
+        existingLeague.setCommissioner(league.getCommissioner());
         existingLeague.setName(league.getName());
         existingLeague.setBuyIn(league.getBuyIn());
         leagueRepository.save(league);

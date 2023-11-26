@@ -1,5 +1,6 @@
 package com.FantasyBasketball.NBAFantasy.controller;
 
+import com.FantasyBasketball.NBAFantasy.exceptions.ElementNotFoundException;
 import com.FantasyBasketball.NBAFantasy.model.League;
 import com.FantasyBasketball.NBAFantasy.model.Team;
 import com.FantasyBasketball.NBAFantasy.service.TeamService;
@@ -22,6 +23,13 @@ public class TeamController {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
 
+    protected void verifyTeam(Long leagueId, Long teamId) throws ElementNotFoundException {
+        Optional<Team> team = Optional.ofNullable(teamService.getTeamById(leagueId, teamId));
+        if (team.isEmpty()) {
+            throw new ElementNotFoundException("Team with id " + teamId + " not found");
+        }
+    }
+
     @PostMapping(value = "/leagues/{leagueId}/teams")
     public ResponseEntity<?> createTeam(@PathVariable Long leagueId, @RequestBody Team team){
         logger.info("Request received: Creating Team");
@@ -43,6 +51,7 @@ public class TeamController {
     @GetMapping(value = "/leagues/{leagueId}/teams/{teamId}")
     public ResponseEntity<?> getTeamById(@PathVariable Long leagueId, @PathVariable Long teamId) {
         logger.info("Request received: Getting team");
+        verifyTeam(leagueId, teamId);
         Team team = teamService.getTeamById(leagueId,teamId);
         logger.info("Team Gotten Successfully");
         return new ResponseEntity<>(team, HttpStatus.OK);
@@ -51,6 +60,7 @@ public class TeamController {
     @PutMapping(value = "/leagues/{leagueId}/teams/{teamId}")
     public ResponseEntity<?> editTeamInfo(@PathVariable Long leagueId, @PathVariable Long teamId, @RequestBody Team updatedTeam){
         logger.info("Request received: Editing Team");
+        verifyTeam(leagueId, teamId);
         teamService.editTeam(leagueId, teamId, updatedTeam);
         logger.info("Team Edited Successfully");
         return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
@@ -59,6 +69,7 @@ public class TeamController {
     @DeleteMapping(value = "/leagues/{leagueId}/teams/{teamId}")
     public ResponseEntity<?> deleteTeam(@PathVariable Long leagueId, @PathVariable Long teamId){
         logger.info("Request received: Deleting team");
+        verifyTeam(leagueId, teamId);
         teamService.deleteTeam(leagueId, teamId);
         logger.info("Team Deleted Successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
