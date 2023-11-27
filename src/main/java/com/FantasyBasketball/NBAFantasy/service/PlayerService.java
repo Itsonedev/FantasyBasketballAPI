@@ -9,7 +9,9 @@ import com.FantasyBasketball.NBAFantasy.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
@@ -55,5 +57,10 @@ public class PlayerService {
         team.getRoster().removeIf(player -> player.getId().equals(playerId));
         teamRepository.save(team);
         playerRepository.deleteById(playerId);
+    }
+    public List<Player> getPlayersByPosition(Long leagueId, Long teamId,String position){
+        Team team = teamService.getTeamById(leagueId, teamId);
+        List<Player> playersWithPosition = team.getRoster().stream().filter(player -> player.getPosition().equals(position)).toList();
+        return playersWithPosition;
     }
 }

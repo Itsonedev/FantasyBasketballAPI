@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -72,5 +73,9 @@ public class PlayerController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
+    @GetMapping(value = "/byPosition")
+    public ResponseEntity<List<Player>> getPlayersByPosition(@RequestParam(name = "leagueId") Long leagueId, @RequestParam(name = "teamId") Long teamId, @RequestParam(name = "position") String position){
+        List<Player> players = playerService.getPlayersByPosition(leagueId,teamId,position);
+        return ResponseEntity.ok(players);
+    }
 }

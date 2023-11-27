@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     Iterable<Player> getAllPlayersByTeamId(Long teamId);
+    Iterable<Player> findPlayerByPosition(String position);
 }
