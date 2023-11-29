@@ -1,12 +1,14 @@
 package com.FantasyBasketball.NBAFantasy.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
 @Entity
+@Builder
 public class Player {
 
     @Id
@@ -14,30 +16,46 @@ public class Player {
     @Column(name = "PLAYER_ID")
     private Long id;
 
-    @Column(name = "PLAYER_NAME")
-    private String name;
+    @Column(name = "FIRST_NAME")
+    private String firstName;
 
-    @Column(name = "PLAYER_POSITION")
+    @Column(name = "LAST_NAME")
+    private String lastName;
+
+    @Column(name = "POSITION")
     private String position;
     @Column(name = "NBA_TEAM")
     private String nbaTeam;
+
+    @Column(name = "COLLEGE")
+    private String college;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "TEAM_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Team team;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "DRAFT_ID")
+    private Draft draft;
+
     public Player() {
     }
 
-
-    public Player(Long id, String name, String position, String nbaTeam, Team team) {
+    public Player(Long id, String firstName, String lastName, String position, String nbaTeam, String college, Team team, Draft draft) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.position = position;
         this.nbaTeam = nbaTeam;
+        this.college = college;
         this.team = team;
+        this.draft = draft;
     }
+
+
 
     public Long getId() {
         return id;
@@ -45,14 +63,6 @@ public class Player {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPosition() {
@@ -77,5 +87,37 @@ public class Player {
 
     public void setNbaTeam(String nbaTeam) {
         this.nbaTeam = nbaTeam;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getCollege() {
+        return college;
+    }
+
+    public void setCollege(String college) {
+        this.college = college;
+    }
+
+    public Draft getDraft() {
+        return draft;
+    }
+
+    public void setDraft(Draft draft) {
+        this.draft = draft;
     }
 }

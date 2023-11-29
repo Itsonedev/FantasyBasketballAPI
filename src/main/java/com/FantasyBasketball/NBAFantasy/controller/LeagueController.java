@@ -1,8 +1,12 @@
 package com.FantasyBasketball.NBAFantasy.controller;
 
 import com.FantasyBasketball.NBAFantasy.exceptions.ElementNotFoundException;
+import com.FantasyBasketball.NBAFantasy.factory.DraftFactory;
+import com.FantasyBasketball.NBAFantasy.model.Draft;
 import com.FantasyBasketball.NBAFantasy.model.League;
+import com.FantasyBasketball.NBAFantasy.model.Player;
 import com.FantasyBasketball.NBAFantasy.service.LeagueService;
+import com.FantasyBasketball.NBAFantasy.service.PlayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +25,11 @@ public class LeagueController {
 
     @Autowired
     private LeagueService leagueService;
+    @Autowired
+    private PlayerService playerService;
+
+    @Autowired
+    private DraftFactory draftFactory;
 
     private static final Logger logger = LoggerFactory.getLogger(LeagueController.class);
 
@@ -28,6 +38,14 @@ public class LeagueController {
         if (league.isEmpty()) {
             throw new ElementNotFoundException("League with id " + leagueId + " not found");
         }
+    }
+
+    @PostMapping(value = "/generate-draft/{leagueId}")
+    public ResponseEntity<?> executeDraft(@PathVariable Long leagueId){
+
+        List<Player> players = playerService.getAllAvailablePlayers();
+         Draft draft = draftFactory.generateDraft(players);
+        return new ResponseEntity<>(draft, HttpStatus.OK);
     }
 
 
