@@ -1,5 +1,6 @@
 package com.FantasyBasketball.NBAFantasy.service;
 
+import com.FantasyBasketball.NBAFantasy.exceptions.PlayerAlreadyOnATeamException;
 import com.FantasyBasketball.NBAFantasy.model.League;
 import com.FantasyBasketball.NBAFantasy.model.Player;
 import com.FantasyBasketball.NBAFantasy.model.Team;
@@ -33,13 +34,31 @@ public class PlayerService {
     }
     @Transactional
     public void draftPlayerToTeam(Long playerId, Long teamId){
-    Player player = playerRepository.findById(playerId).orElse(null);
-    Team team = teamRepository.findById(teamId).orElse(null);
-    team.setRoster(new ArrayList<>());
-    team.getRoster().add(player);
-    player.setTeam(team);
-    teamRepository.save(team);
+        Player player = playerRepository.findById(playerId).orElse(null);
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (player.getTeam() == null){
+        team.setRoster(new ArrayList<>());
+        team.getRoster().add(player);
+        player.setTeam(team);
+        teamRepository.save(team);
+         }else {
+        throw new PlayerAlreadyOnATeamException( player.getFirstName() + " "+ player.getLastName() +" is already on team: " + player.getTeam().getTeamName());
+        }
     }
+    @Transactional
+    public void dropPlayerFromTeam(Long playerId, Long teamId){
+        Player player = playerRepository.findById(playerId).orElse(null);
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (player.getTeam() == team){
+            player.setTeam(null);
+            team.getRoster().remove(player);
+            teamRepository.save(team);
+            playerRepository.save(player);
+        }else {
+            throw new PlayerAlreadyOnATeamException( player.getFirstName() + " "+ player.getLastName() +" is not currently on team: " + team.getTeamName());
+        }
+    }
+
     public List<Player> getPlayersByFirstName(String firstName) {
         return playerRepository.findByFirstName(firstName);
     }
@@ -56,35 +75,13 @@ public class PlayerService {
         return team.getRoster();
     }
 
-    public Player createPlayer(Long leagueId, Long teamId, Player player){
-        Team team = teamService.getTeamById(leagueId, teamId);
-        player.setTeam(team);
-        return playerRepository.save(player);
-    }
 
     public Player getPlayerById(Long playerId){
        Player playerIWant = playerRepository.findById(playerId).orElse(null);
         return playerIWant;
     }
 
-    public void editPlayer(Long leagueId, Long teamId, Long playerId, Player updatedPlayer){
-        Team existingTeam = teamService.getTeamById(leagueId, teamId);
-        existingTeam.getRoster().stream().filter(player -> player.getId().equals(playerId)).findFirst().ifPresent(player -> {
-//            player.setName(updatedPlayer.getName());
-            player.setPosition(updatedPlayer.getPosition());
-            player.setNbaTeam(updatedPlayer.getNbaTeam());});
-        teamRepository.save(existingTeam);
-    }
 
-    public void deletePlayer(Long leagueId, Long teamId, Long playerId){
-        Team team = teamService.getTeamById(leagueId, teamId);
-        team.getRoster().removeIf(player -> player.getId().equals(playerId));
-        teamRepository.save(team);
-        playerRepository.deleteById(playerId);
-    }
-    public List<Player> getPlayersByPosition(Long leagueId, Long teamId,String position){
-        Team team = teamService.getTeamById(leagueId, teamId);
-        List<Player> playersWithPosition = team.getRoster().stream().filter(player -> player.getPosition().equals(position)).toList();
-        return playersWithPosition;
-    }
+
+
 }

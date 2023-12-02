@@ -24,6 +24,9 @@ public class League {
     @JsonIgnore
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL)
     private List<Team> teams;
+    @JsonIgnore
+    @OneToOne
+    private Draft draft;
 
     @Column(name = "BUY_IN")
     private Double buyIn;
@@ -33,12 +36,12 @@ public class League {
     public League() {
     }
 
-
-    public League(Long id, String commissioner, String name, List<Team> teams, Double buyIn, Double totalPot) {
+    public League(Long id, String commissioner, String name, List<Team> teams, Draft draft, Double buyIn, Double totalPot) {
         this.id = id;
         this.commissioner = commissioner;
         this.name = name;
         this.teams = teams;
+        this.draft = draft;
         this.buyIn = buyIn;
         this.totalPot = totalPot;
     }
@@ -98,5 +101,13 @@ public class League {
 
     public void setCommissioner(String commissioner) {
         this.commissioner = commissioner;
+    }
+
+    public Draft getDraft() {
+        return draft;
+    }
+
+    public void setDraft(Draft draft) {
+        this.draft = draft;
     }
 }

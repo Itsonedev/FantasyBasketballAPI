@@ -1,10 +1,11 @@
 package com.FantasyBasketball.NBAFantasy.controller;
 
 import com.FantasyBasketball.NBAFantasy.exceptions.ElementNotFoundException;
-import com.FantasyBasketball.NBAFantasy.factory.DraftFactory;
+
 import com.FantasyBasketball.NBAFantasy.model.Draft;
 import com.FantasyBasketball.NBAFantasy.model.League;
 import com.FantasyBasketball.NBAFantasy.model.Player;
+import com.FantasyBasketball.NBAFantasy.service.DraftService;
 import com.FantasyBasketball.NBAFantasy.service.LeagueService;
 import com.FantasyBasketball.NBAFantasy.service.PlayerService;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -27,9 +29,9 @@ public class LeagueController {
     private LeagueService leagueService;
     @Autowired
     private PlayerService playerService;
-
     @Autowired
-    private DraftFactory draftFactory;
+    private DraftService draftService;
+
 
     private static final Logger logger = LoggerFactory.getLogger(LeagueController.class);
 
@@ -40,13 +42,16 @@ public class LeagueController {
         }
     }
 
-    @PostMapping(value = "/generate-draft/{leagueId}")
-    public ResponseEntity<?> executeDraft(@PathVariable Long leagueId){
 
-        List<Player> players = playerService.getAllAvailablePlayers();
-         Draft draft = draftFactory.generateDraft(players);
-        return new ResponseEntity<>(draft, HttpStatus.OK);
+    @GetMapping(value = "/leagues/{leagueId}/conduct-draft")
+    public ResponseEntity<?> conductDraft(@PathVariable Long leagueId){
+        logger.info("Request received: Conducting draft");
+        verifyLeague(leagueId);
+        League league = leagueService.getLeagueById(leagueId);
+        draftService.conductDraft(league);
+        return new ResponseEntity<>("Draft Completed Successfully",HttpStatus.OK);
     }
+
 
 
     @GetMapping(value = "/leagues")

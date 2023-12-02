@@ -9,6 +9,8 @@ public class Draft {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DRAFT_ID")
     private Long id;
+    @OneToOne
+    private League league;
 
     @OneToMany(mappedBy = "draft", cascade = CascadeType.ALL)
     private List<Player> players;

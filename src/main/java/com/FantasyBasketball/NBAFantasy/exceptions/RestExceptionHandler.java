@@ -35,6 +35,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetail, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(PlayerAlreadyOnATeamException.class)
+    public ResponseEntity<Object> handlePlayerAlreadyOnATeam(PlayerAlreadyOnATeamException paoat){
+        ErrorDetail errorDetail = new ErrorDetail();
+        errorDetail.setTimeStamp(new Date().getTime());
+        errorDetail.setStatus(HttpStatus.FORBIDDEN.value());
+        errorDetail.setTitle("Player Already on a Team");
+        errorDetail.setDetail(paoat.getMessage());
+        errorDetail.setDeveloperMessage(paoat.getClass().getName());
+
+        return new ResponseEntity<>(errorDetail, HttpStatus.FORBIDDEN);
+    }
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers,
